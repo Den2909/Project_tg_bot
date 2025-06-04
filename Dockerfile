@@ -4,29 +4,24 @@ FROM python:3.11-slim
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем файлы проекта (кроме basicsr_local)
+# Копируем все файлы проекта
 COPY . /app
-
-# Устанавливаем git
-RUN apt-get update && apt-get install -y git
-
 
 # Проверяем наличие файлов
 RUN ls -la /app
+RUN ls -la /app/BasicSR  # Добавляем для отладки
 
 # Обновляем pip
 RUN pip install --upgrade pip
 
-# Устанавливаем зависимости из requirements.txt 
-
-COPY requirements.txt /app/
+# Устанавливаем зависимости из requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Устанавливаем модифицированный basicsr из локальной директории
-RUN pip install --no-cache-dir -e /app/basicsr_local
+RUN pip install --no-cache-dir -e /app/BasicSR
 
-# Устанавливаем зависимости для OpenCV и Real-ESRGAN, включая libGL
-RUN apt-get install -y \
+# Устанавливаем зависимости для OpenCV и Real-ESRGAN
+RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
