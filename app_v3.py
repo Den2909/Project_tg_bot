@@ -19,7 +19,7 @@ from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
 
 # Инициализация бота
-API_TOKEN = "8123125794:AAHc7v9KqBNgsgYyEe_MC7c1MrKtdTN0Y5w"
+API_TOKEN = ""
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
