@@ -1,4 +1,3 @@
-(myenv311) den@LAPTOP-ACQHB722:/mnt/d/Python/Project/tg_bot/pytorch-CycleGAN-and-pix2pix/Project_tg_bot$ cat Dockerfile
 # Базовый образ с поддержкой CUDA (если доступно) или обычный Python
 ARG BASE_IMAGE=python:3.11-slim
 FROM ${BASE_IMAGE}
