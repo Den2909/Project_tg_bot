@@ -23,5 +23,23 @@
    cd Project_tg_bot 
 
 2. **Соберите Docker-образ**:
-  '''bash
-  docker build -t tg-bot .
+   ```bash
+   docker build -t tg-bot .
+
+3. **Соберите Docker-образ**:
+ - На машине с GPU:
+   ```bash
+   docker run --gpus all -d --name style-bot -e TELEGRAM_BOT_TOKEN="token" tg-bot
+
+ - На машине с CPU:
+   ```bash
+   docker run -d --name style-bot -e TELEGRAM_BOT_TOKEN="token" tg-bot
+
+4. **Взаимодействуйте с ботом**:
+
+- Найдите бота в Telegram: [@MyStyleBot](https://t.me/MyStyleBot).
+- Используйте команды:
+  - `/start` — для начала работы.
+  - `/style` — для стилизации с предобученной моделью.
+  - `/enhance` — для улучшения качества изображения.
+  - `/nst` — для нейронного переноса стиля.
