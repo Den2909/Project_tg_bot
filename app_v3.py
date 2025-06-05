@@ -17,9 +17,12 @@ import numpy as np
 from models.networks import define_G, init_weights
 from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
+import os
 
 # Инициализация бота
-API_TOKEN = ""
+API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # Получаем токен из переменной окружения
+if not API_TOKEN:
+    raise ValueError("Не задан TELEGRAM_BOT_TOKEN в переменных окружения!")
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
