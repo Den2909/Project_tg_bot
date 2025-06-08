@@ -7,5 +7,5 @@ exclude =
     .venv,
     BasicSR/,
 ignore =
-    E203,  
-    W503,  
+    E203,  # Black: пробелы перед двоеточиями
+    W503,  # Black: перенос операторов
