@@ -26,6 +26,22 @@ def test_load_model(mock_module, mock_torch_load):
     assert "test_model" in MODELS_CACHE
     assert MODELS_CACHE["test_model"] == mock_model
 
+# Тест для функции из degradations.py, не использующей rgb_to_grayscale
+def test_random_bivariate_gaussian():
+    """Тест: random_bivariate_Gaussian создаёт нормализованный кернел."""
+    import numpy as np
+    from app_v3 import random_bivariate_Gaussian  # Предполагаем, что функция скопирована в app_v3.py
+    kernel = random_bivariate_Gaussian(
+        kernel_size=21,
+        sigma_x_range=(0.6, 5),
+        sigma_y_range=(0.6, 5),
+        rotation_range=(-np.pi, np.pi),
+        isotropic=True
+    )
+    assert kernel.shape == (21, 21)
+    assert np.isclose(np.sum(kernel), 1.0, atol=1e-6)  # Нормализация
+    assert np.all(kernel >= 0)  # Кернел неотрицательный
+
 # Опциональный тест для хэндлера
 @patch("app_v3.realesrgan", None)  # Изолируем realesrgan
 @pytest.mark.asyncio
