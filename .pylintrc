@@ -1,6 +1,6 @@
 [MASTER]
 # Игнорируемые директории
-ignore=venv,.venv,BasicSR, tests
+ignore=venv,.venv,BasicSR,tests
 # Разрешённые сторонние модули, которые могут вызывать E0401
 extension-pkg-whitelist=cv2,realesrgan,basicsr
 # Максимальная длина строки (совместимо с Black)
