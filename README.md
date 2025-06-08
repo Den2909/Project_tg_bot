@@ -11,7 +11,6 @@
 
 ## Требования
 
-- Docker (для запуска контейнера)
 - NVIDIA Container Toolkit (для работы на GPU, если доступен)
 - Telegram API-токен (Токен был прикреплен к ссылке на github в Stepik)
 
