@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black==24.8.0 flake8==7.1.1 pylint==3.3.1 mypy==1.11.2 pytest==8.3.3 pytest-asyncio==0.24.0 aiogram==2.25.2 torch==1.13.1 torchvision==0.14.1 Pillow opencv-python numpy realesrgan basicsr
+        pip install black==24.8.0 flake8==7.1.1 pylint==3.3.1 mypy==1.11.2 pytest==8.3.3 pytest-asyncio==0.24.0 aiogram==2.25.2 torch==2.0.0 torchvision==0.15.1 Pillow opencv-python numpy realesrgan basicsr
     - name: Run Black (format)
       run: black .
     - name: Run Black (check)
