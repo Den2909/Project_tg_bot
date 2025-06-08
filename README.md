@@ -13,7 +13,7 @@
 
 - Docker (для запуска контейнера)
 - NVIDIA Container Toolkit (для работы на GPU, если доступен)
-- Telegram API-токен (получите у [@BotFather](https://t.me/BotFather))
+- Telegram API-токен (Токен был прикреплен к ссылке на github в Stepik)
 
 ## Инструкции по запуску Docker-контейнера
 
