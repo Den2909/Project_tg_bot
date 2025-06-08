@@ -1,0 +1,11 @@
+[flake8]
+max-line-length = 88  # Совместимо с Black
+exclude =
+    .git,
+    __pycache__,
+    venv,
+    .venv,
+    BasicSR/,
+ignore =
+    E203,  # Конфликты Black с пробелами перед двоеточиями
+    W503,  # Конфликты Black с переносом операторов
