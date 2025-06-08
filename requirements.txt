@@ -5,3 +5,7 @@ Pillow==10.0.0
 opencv-python==4.9.0.80
 numpy==1.26.0
 realesrgan==0.3.0
+flake8==7.1.1
+pylint==3.3.1
+mypy==1.11.2
+black==24.8.0
