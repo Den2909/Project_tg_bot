@@ -35,7 +35,7 @@ STYLE_MODELS = {
 }
 
 # Глобальный словарь для хранения загруженных моделей
-MODELS_CACHE = {}
+MODELS_CACHE = {} # type: ignore
 
 # Загрузка VGG19 для NST
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
