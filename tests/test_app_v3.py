@@ -1,12 +1,10 @@
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
 
-@pytest.fixture
-def mock_env():
-    """Мок переменных окружения."""
-    with patch("app_v3.os.getenv") as mock_getenv:
-        mock_getenv.return_value = "mocked_token"
-        yield mock_getenv
+@pytest.fixture(autouse=True)
+def mock_env(monkeypatch):
+    """Мок переменных окружения для всех тестов."""
+    monkeypatch.setattr("os.getenv", lambda x: "mocked_token")
 
 @pytest.fixture
 def mock_message():
@@ -18,7 +16,7 @@ def mock_message():
 
 @patch("app_v3.realesrgan", None)  # Изолируем realesrgan
 @patch("app_v3.torchvision", None)  # Изолируем torchvision
-def test_models_cache_initialization(mock_env):
+def test_models_cache_initialization():
     """Тест: MODELS_CACHE — пустой словарь."""
     from app_v3 import MODELS_CACHE
     assert isinstance(MODELS_CACHE, dict)
@@ -28,7 +26,7 @@ def test_models_cache_initialization(mock_env):
 @patch("app_v3.torchvision", None)
 @patch("app_v3.torch.load")
 @patch("app_v3.nn.Module")
-def test_load_model(mock_module, mock_torch_load, mock_env):
+def test_load_model(mock_module, mock_torch_load):
     """Тест: load_model загружает модель в кэш."""
     from app_v3 import load_model, MODELS_CACHE
     mock_model = MagicMock()
@@ -41,7 +39,7 @@ def test_load_model(mock_module, mock_torch_load, mock_env):
 @pytest.mark.asyncio
 @patch("app_v3.realesrgan", None)
 @patch("app_v3.torchvision", None)
-async def test_start_handler(mock_message, mock_env):
+async def test_start_handler(mock_message):
     """Тест: start_handler отправляет приветствие."""
     from app_v3 import start_handler
     await start_handler(mock_message)
