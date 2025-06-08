@@ -1,0 +1,9 @@
+[MASTER]
+disable=
+    C0114,  # Missing module docstring
+    C0115,  # Missing class docstring
+    C0116,  # Missing function docstring
+    R0903,  # Too few public methods
+    R0914,  # Too many local variables
+max-line-length=88
+ignore=venv,.venv,BasicSR
