@@ -1,29 +1,31 @@
 [MASTER]
-# Игнорируемые директории
 ignore=venv,.venv,BasicSR,tests
-# Разрешённые сторонние модули, которые могут вызывать E0401
-extension-pkg-whitelist=cv2,realesrgan,basicsr
-# Максимальная длина строки (совместимо с Black)
+extension-pkg-whitelist=cv2,realesrgan,basicsr,pytest
 max-line-length=88
 
 [MESSAGES CONTROL]
-# Игнорируемые коды ошибок и предупреждений
 disable=
     C0114,  # Missing module docstring
     C0115,  # Missing class docstring
     C0116,  # Missing function docstring
     R0903,  # Too few public methods
     R0914,  # Too many local variables
-    C0301,  # Line too long (длинные строки)
-    E0401,  # Import error (ошибки импорта)
-    R0402,  # Consider using from-import (предложение использовать from torch import ...)
-    W0611,  # Unused import (неиспользуемые импорты)
-    W0612,  # Unused variable (неиспользуемые переменные)
-    W0621,  # Redefined outer name (переопределение имён)
-    C0103,  # Invalid name (несоответствие стиля именования)
-    W0212,  # Protected access (доступ к защищённым членам)
-    R0915,  # Too many statements (слишком много операторов)
-    W0640,  # Cell variable defined in loop
-    W0613,  # Unused argument (неиспользуемые аргументы)
+    C0301,  # Line too long
+    E0401,  # Import error
+    R0402,  # Consider using from-import
+    W0611,  # Unused import
+    W0612,  # Unused variable
+    W0621,  # Redefined outer name
+    C0103,  # Invalid name
+    W0212,  # Protected access
+    R0915,  # Too many statements
+    W0640,  # Cell variable in loop
+    W0613,  # Unused argument
     R1722,  # Consider using sys.exit
-    C0411   # Wrong import order (неправильный порядок импортов)
+    C0411,  # Wrong import order
+    C0415,  # Import outside toplevel
+    E0611,  # No name in module
+    E1101,  # No member
+    E1121,  # Too many function args
+    E1125,  # Missing keyword argument
+    C1803,  # Use implicit booleaness
