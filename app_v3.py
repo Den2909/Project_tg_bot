@@ -17,7 +17,6 @@ import numpy as np
 from models.networks import define_G, init_weights
 from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
-import os
 
 # Инициализация бота
 API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # Получаем токен из переменной окружения
@@ -58,7 +57,7 @@ def load_model(style_key):
         print(f"Using cached model for style: {style_key}")
         return MODELS_CACHE[style_key]
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu") # noqa: F841
     net_G = define_G(input_nc=3, output_nc=3, ngf=64, netG="resnet_9blocks").to(device)
 
     print("Initializing network weights before loading checkpoint")
@@ -74,7 +73,7 @@ def load_model(style_key):
 
 # Загрузка модели Real-ESRGAN
 def load_enhance_model():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu") # noqa: F841
     model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
     upsampler = RealESRGANer(
         scale=4,
@@ -90,7 +89,7 @@ def load_enhance_model():
 
 # Функция обработки изображения для стилизации (предобученной моделью)
 def process_image(content_path, style_key):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu") # noqa: F841
     content_img = Image.open(content_path).convert("RGB")
 
     content_img = cv2.resize(np.array(content_img), (256, 256))
@@ -116,7 +115,7 @@ def process_image(content_path, style_key):
 
 # Функция улучшения качества изображения с Real-ESRGAN
 def enhance_image(content_path):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu") # noqa: F841
     upsampler = load_enhance_model()
 
     img = Image.open(content_path).convert("RGB")
