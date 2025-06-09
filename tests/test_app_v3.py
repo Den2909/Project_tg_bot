@@ -8,6 +8,12 @@ import torch
 from unittest.mock import patch, MagicMock
 from collections import OrderedDict
 
+# Мокаем aiogram.Dispatcher на уровне модуля, чтобы перехватить его до импорта app_v3
+mock_dispatcher = MagicMock()
+mock_dispatcher.message_handler = MagicMock(return_value=lambda x: x)
+mock_dispatcher.callback_query_handler = MagicMock(return_value=lambda x: x)
+sys.modules["aiogram"].Dispatcher = mock_dispatcher
+
 # Сохраняем реальный os.getenv
 real_getenv = os.getenv
 
@@ -20,10 +26,7 @@ def mock_telegram_api():
         return real_getenv(key, default)
     
     with patch("os.getenv", side_effect=selective_getenv), \
-         patch("aiogram.Bot", return_value=MagicMock()), \
-         patch("aiogram.Dispatcher", return_value=MagicMock()) as mock_dispatcher:
-        mock_dispatcher.return_value.message_handler = MagicMock(return_value=lambda x: x)
-        mock_dispatcher.return_value.callback_query_handler = MagicMock(return_value=lambda x: x)
+         patch("aiogram.Bot", return_value=MagicMock()):
         yield
 
 # Тест загрузки модели
@@ -31,7 +34,6 @@ def test_load_model(mocker):
     # Мокаем torch.load для load_model
     mocker.patch("torch.load", return_value={})
     # Мокаем VGG19_Weights.IMAGENET1K_V1.get_state_dict
-    # Определяем размерности для features и classifier
     feature_shapes = {
         0: ([64, 3, 3, 3], [64]),      # weight: [out, in, k, k], bias: [out]
         2: ([64, 64, 3, 3], [64]),
