@@ -20,7 +20,7 @@ from basicsr.archs.rrdbnet_arch import RRDBNet
 import sys
 
 
-# Инициализация бота только если не в тестовом окружении
+# Инициализация бота
 if "pytest" not in sys.modules:
     API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
     if not API_TOKEN:
@@ -31,9 +31,11 @@ if "pytest" not in sys.modules:
 else:
     # Заглушки для тестов
     API_TOKEN = None
-    bot = None
+    bot = MagicMock()
     storage = None
-    dp = None
+    dp = MagicMock()
+    dp.message_handler = MagicMock(return_value=lambda x: x)
+    dp.callback_query_handler = MagicMock(return_value=lambda x: x)
 
 # Словарь с доступными стилями и путями к моделям
 STYLE_MODELS = {
