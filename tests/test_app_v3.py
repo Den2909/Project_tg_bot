@@ -4,6 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
 import importlib
+import torch
 from unittest.mock import patch, MagicMock
 from collections import OrderedDict
 
@@ -31,10 +32,15 @@ def test_load_model(mocker):
     mocker.patch("torch.load", return_value={})
     # Мокаем VGG19_Weights.IMAGENET1K_V1.get_state_dict
     mock_state_dict = OrderedDict([
-        ("features.0.weight", MagicMock()),
-        ("features.0.bias", MagicMock()),
-        ("classifier.6.weight", MagicMock()),
-        ("classifier.6.bias", MagicMock())
+        # Features
+        (f"features.{i}.{param}", torch.tensor(0.0))
+        for i in [0, 2, 5, 7, 10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32, 34]
+        for param in ["weight", "bias"]
+    ] + [
+        # Classifier
+        (f"classifier.{i}.{param}", torch.tensor(0.0))
+        for i in [0, 3, 6]
+        for param in ["weight", "bias"]
     ])
     mocker.patch(
         "torchvision.models.vgg.VGG19_Weights.IMAGENET1K_V1.get_state_dict",
