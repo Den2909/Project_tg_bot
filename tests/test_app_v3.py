@@ -6,13 +6,16 @@ import pytest
 import importlib
 from unittest.mock import patch, MagicMock
 
+# Сохраняем реальный os.getenv
+real_getenv = os.getenv
+
 # Моки для Telegram API
 @pytest.fixture(autouse=True)
 def mock_telegram_api():
     def selective_getenv(key, default=None):
         if key == "TELEGRAM_BOT_TOKEN":
             return "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-        return os.getenv(key, default)
+        return real_getenv(key, default)
     
     with patch("os.getenv", side_effect=selective_getenv), \
          patch("aiogram.Bot", return_value=MagicMock()):
