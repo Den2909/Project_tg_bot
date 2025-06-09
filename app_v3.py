@@ -17,25 +17,15 @@ import numpy as np
 from models.networks import define_G, init_weights
 from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
-import sys
-
 
 # Инициализация бота
-if "pytest" not in sys.modules:
-    API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-    if not API_TOKEN:
-        raise ValueError("Не задан TELEGRAM_BOT_TOKEN в переменных окружения!")
-    bot = Bot(token=API_TOKEN)
-    storage = MemoryStorage()
-    dp = Dispatcher(bot, storage=storage)
-else:
-    # Заглушки для тестов
-    API_TOKEN = None
-    bot = MagicMock()
-    storage = None
-    dp = MagicMock()
-    dp.message_handler = MagicMock(return_value=lambda x: x)
-    dp.callback_query_handler = MagicMock(return_value=lambda x: x)
+API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # Получаем токен из переменной окружения
+if not API_TOKEN:
+    raise ValueError("Не задан TELEGRAM_BOT_TOKEN в переменных окружения!")
+bot = Bot(token=API_TOKEN)
+storage = MemoryStorage()
+dp = Dispatcher(bot, storage=storage)
+
 
 # Словарь с доступными стилями и путями к моделям
 STYLE_MODELS = {
