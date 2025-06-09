@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pytest
 import importlib
 import torch
-from unittest.mock import MagicMock
+from unittest.mock import patch, MagicMock
 from collections import OrderedDict
 
 # Сохраняем реальный os.getenv
@@ -16,7 +16,7 @@ real_getenv = os.getenv
 def mock_telegram_api():
     def selective_getenv(key, default=None):
         if key == "TELEGRAM_BOT_TOKEN":
-            return "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            return "123456:ABC-DEF1234ghIkl-123ew11"
         return real_getenv(key, default)
     
     with patch("os.getenv", side_effect=selective_getenv), \
@@ -25,13 +25,13 @@ def mock_telegram_api():
 
 # Тест загрузки модели
 def test_load_model(mocker):
-    # Мокаем aiogram.Dispatcher до импорта app_v3
+    # Мокаем aiogram.Dispatcher
     mock_dispatcher = MagicMock()
     mock_dispatcher.message_handler = MagicMock(return_value=lambda x: x)
     mock_dispatcher.callback_query_handler = MagicMock(return_value=lambda x: x)
     mocker.patch("aiogram.Dispatcher", return_value=mock_dispatcher)
     
-    # Мокаем torch.load для load_model
+    # Мокаем torch.load
     mocker.patch("torch.load", return_value={})
     # Мокаем VGG19_Weights.IMAGENET1K_V1.get_state_dict
     feature_shapes = {
@@ -53,7 +53,7 @@ def test_load_model(mocker):
         34: ([512, 512, 3, 3], [512]),
     }
     classifier_shapes = {
-        0: ([4096, 25088], [4096]),    # weight: [out, in], bias: [out]
+        0: ([4096, 25088], [4096]),
         3: ([4096, 4096], [4096]),
         6: ([1000, 4096], [1000]),
     }
@@ -70,7 +70,7 @@ def test_load_model(mocker):
         "torchvision.models.vgg.VGG19_Weights.IMAGENET1K_V1.get_state_dict",
         return_value=mock_state_dict
     )
-    # Динамически импортируем app_v3
+    # Импортируем app_v3
     app_v3 = importlib.import_module("app_v3")
     model = app_v3.load_model("vangogh")
     assert model is not None, "Model failed to load"
