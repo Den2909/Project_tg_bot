@@ -1,11 +1,6 @@
-[tool.black]
-line-length = 88
-target-version = ['py311']
-exclude = '''
-/(
-    \.git
-  | \.venv
-  | venv
-  | BasicSR
-)/
-'''
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+  "ignore::UserWarning:torchvision.transforms.functional_tensor",
+  "ignore::DeprecationWarning:basicsr.metrics.niqe"
+]

@@ -10,8 +10,10 @@ from torchvision import models
 
 # Inception weights ported to Pytorch from
 # http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz
-FID_WEIGHTS_URL = 'https://github.com/mseitzer/pytorch-fid/releases/download/fid_weights/pt_inception-2015-12-05-6726825d.pth'  # noqa: E501
-LOCAL_FID_WEIGHTS = 'experiments/pretrained_models/pt_inception-2015-12-05-6726825d.pth'  # noqa: E501
+FID_WEIGHTS_URL = "https://github.com/mseitzer/pytorch-fid/releases/download/fid_weights/pt_inception-2015-12-05-6726825d.pth"  # noqa: E501
+LOCAL_FID_WEIGHTS = (
+    "experiments/pretrained_models/pt_inception-2015-12-05-6726825d.pth"  # noqa: E501
+)
 
 
 class InceptionV3(nn.Module):
@@ -26,15 +28,17 @@ class InceptionV3(nn.Module):
         64: 0,  # First max pooling features
         192: 1,  # Second max pooling features
         768: 2,  # Pre-aux classifier features
-        2048: 3  # Final average pooling features
+        2048: 3,  # Final average pooling features
     }
 
-    def __init__(self,
-                 output_blocks=(DEFAULT_BLOCK_INDEX),
-                 resize_input=True,
-                 normalize_input=True,
-                 requires_grad=False,
-                 use_fid_inception=True):
+    def __init__(
+        self,
+        output_blocks=(DEFAULT_BLOCK_INDEX),
+        resize_input=True,
+        normalize_input=True,
+        requires_grad=False,
+        use_fid_inception=True,
+    ):
         """Build pretrained InceptionV3.
 
         Args:
@@ -71,7 +75,7 @@ class InceptionV3(nn.Module):
         self.output_blocks = sorted(output_blocks)
         self.last_needed_block = max(output_blocks)
 
-        assert self.last_needed_block <= 3, ('Last possible output block index is 3')
+        assert self.last_needed_block <= 3, "Last possible output block index is 3"
 
         self.blocks = nn.ModuleList()
 
@@ -86,14 +90,20 @@ class InceptionV3(nn.Module):
 
         # Block 0: input to maxpool1
         block0 = [
-            inception.Conv2d_1a_3x3, inception.Conv2d_2a_3x3, inception.Conv2d_2b_3x3,
-            nn.MaxPool2d(kernel_size=3, stride=2)
+            inception.Conv2d_1a_3x3,
+            inception.Conv2d_2a_3x3,
+            inception.Conv2d_2b_3x3,
+            nn.MaxPool2d(kernel_size=3, stride=2),
         ]
         self.blocks.append(nn.Sequential(*block0))
 
         # Block 1: maxpool1 to maxpool2
         if self.last_needed_block >= 1:
-            block1 = [inception.Conv2d_3b_1x1, inception.Conv2d_4a_3x3, nn.MaxPool2d(kernel_size=3, stride=2)]
+            block1 = [
+                inception.Conv2d_3b_1x1,
+                inception.Conv2d_4a_3x3,
+                nn.MaxPool2d(kernel_size=3, stride=2),
+            ]
             self.blocks.append(nn.Sequential(*block1))
 
         # Block 2: maxpool2 to aux classifier
@@ -113,8 +123,10 @@ class InceptionV3(nn.Module):
         # Block 3: aux classifier to final avgpool
         if self.last_needed_block >= 3:
             block3 = [
-                inception.Mixed_7a, inception.Mixed_7b, inception.Mixed_7c,
-                nn.AdaptiveAvgPool2d(output_size=(1, 1))
+                inception.Mixed_7a,
+                inception.Mixed_7b,
+                inception.Mixed_7c,
+                nn.AdaptiveAvgPool2d(output_size=(1, 1)),
             ]
             self.blocks.append(nn.Sequential(*block3))
 
@@ -136,7 +148,7 @@ class InceptionV3(nn.Module):
         output = []
 
         if self.resize_input:
-            x = F.interpolate(x, size=(299, 299), mode='bilinear', align_corners=False)
+            x = F.interpolate(x, size=(299, 299), mode="bilinear", align_corners=False)
 
         if self.normalize_input:
             x = 2 * x - 1  # Scale from range (0, 1) to range (-1, 1)
@@ -162,10 +174,14 @@ def fid_inception_v3():
     necessary parts that are different in the FID Inception model.
     """
     try:
-        inception = models.inception_v3(num_classes=1008, aux_logits=False, pretrained=False, init_weights=False)
+        inception = models.inception_v3(
+            num_classes=1008, aux_logits=False, pretrained=False, init_weights=False
+        )
     except TypeError:
         # pytorch < 1.5 does not have init_weights for inception_v3
-        inception = models.inception_v3(num_classes=1008, aux_logits=False, pretrained=False)
+        inception = models.inception_v3(
+            num_classes=1008, aux_logits=False, pretrained=False
+        )
 
     inception.Mixed_5b = FIDInceptionA(192, pool_features=32)
     inception.Mixed_5c = FIDInceptionA(256, pool_features=64)
@@ -178,7 +194,9 @@ def fid_inception_v3():
     inception.Mixed_7c = FIDInceptionE_2(2048)
 
     if os.path.exists(LOCAL_FID_WEIGHTS):
-        state_dict = torch.load(LOCAL_FID_WEIGHTS, map_location=lambda storage, loc: storage)
+        state_dict = torch.load(
+            LOCAL_FID_WEIGHTS, map_location=lambda storage, loc: storage
+        )
     else:
         state_dict = load_url(FID_WEIGHTS_URL, progress=True)
 
@@ -204,7 +222,9 @@ class FIDInceptionA(models.inception.InceptionA):
 
         # Patch: Tensorflow's average pool does not use the padded zero's in
         # its average calculation
-        branch_pool = F.avg_pool2d(x, kernel_size=3, stride=1, padding=1, count_include_pad=False)
+        branch_pool = F.avg_pool2d(
+            x, kernel_size=3, stride=1, padding=1, count_include_pad=False
+        )
         branch_pool = self.branch_pool(branch_pool)
 
         outputs = [branch1x1, branch5x5, branch3x3dbl, branch_pool]
@@ -232,7 +252,9 @@ class FIDInceptionC(models.inception.InceptionC):
 
         # Patch: Tensorflow's average pool does not use the padded zero's in
         # its average calculation
-        branch_pool = F.avg_pool2d(x, kernel_size=3, stride=1, padding=1, count_include_pad=False)
+        branch_pool = F.avg_pool2d(
+            x, kernel_size=3, stride=1, padding=1, count_include_pad=False
+        )
         branch_pool = self.branch_pool(branch_pool)
 
         outputs = [branch1x1, branch7x7, branch7x7dbl, branch_pool]
@@ -265,7 +287,9 @@ class FIDInceptionE_1(models.inception.InceptionE):
 
         # Patch: Tensorflow's average pool does not use the padded zero's in
         # its average calculation
-        branch_pool = F.avg_pool2d(x, kernel_size=3, stride=1, padding=1, count_include_pad=False)
+        branch_pool = F.avg_pool2d(
+            x, kernel_size=3, stride=1, padding=1, count_include_pad=False
+        )
         branch_pool = self.branch_pool(branch_pool)
 
         outputs = [branch1x1, branch3x3, branch3x3dbl, branch_pool]

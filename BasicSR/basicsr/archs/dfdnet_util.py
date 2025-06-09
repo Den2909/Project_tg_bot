@@ -10,13 +10,17 @@ class BlurFunctionBackward(Function):
     @staticmethod
     def forward(ctx, grad_output, kernel, kernel_flip):
         ctx.save_for_backward(kernel, kernel_flip)
-        grad_input = F.conv2d(grad_output, kernel_flip, padding=1, groups=grad_output.shape[1])
+        grad_input = F.conv2d(
+            grad_output, kernel_flip, padding=1, groups=grad_output.shape[1]
+        )
         return grad_input
 
     @staticmethod
     def backward(ctx, gradgrad_output):
         kernel, _ = ctx.saved_tensors
-        grad_input = F.conv2d(gradgrad_output, kernel, padding=1, groups=gradgrad_output.shape[1])
+        grad_input = F.conv2d(
+            gradgrad_output, kernel, padding=1, groups=gradgrad_output.shape[1]
+        )
         return grad_input, None, None
 
 
@@ -63,7 +67,7 @@ def calc_mean_std(feat, eps=1e-5):
             divide-by-zero. Default: 1e-5.
     """
     size = feat.size()
-    assert len(size) == 4, 'The input feature should be 4D tensor.'
+    assert len(size) == 4, "The input feature should be 4D tensor."
     n, c = size[:2]
     feat_var = feat.view(n, c, -1).var(dim=2) + eps
     feat_std = feat_var.sqrt().view(n, c, 1, 1)
@@ -84,17 +88,23 @@ def adaptive_instance_normalization(content_feat, style_feat):
     size = content_feat.size()
     style_mean, style_std = calc_mean_std(style_feat)
     content_mean, content_std = calc_mean_std(content_feat)
-    normalized_feat = (content_feat - content_mean.expand(size)) / content_std.expand(size)
+    normalized_feat = (content_feat - content_mean.expand(size)) / content_std.expand(
+        size
+    )
     return normalized_feat * style_std.expand(size) + style_mean.expand(size)
 
 
 def AttentionBlock(in_channel):
     return nn.Sequential(
-        spectral_norm(nn.Conv2d(in_channel, in_channel, 3, 1, 1)), nn.LeakyReLU(0.2, True),
-        spectral_norm(nn.Conv2d(in_channel, in_channel, 3, 1, 1)))
+        spectral_norm(nn.Conv2d(in_channel, in_channel, 3, 1, 1)),
+        nn.LeakyReLU(0.2, True),
+        spectral_norm(nn.Conv2d(in_channel, in_channel, 3, 1, 1)),
+    )
 
 
-def conv_block(in_channels, out_channels, kernel_size=3, stride=1, dilation=1, bias=True):
+def conv_block(
+    in_channels, out_channels, kernel_size=3, stride=1, dilation=1, bias=True
+):
     """Conv block used in MSDilationBlock."""
 
     return nn.Sequential(
@@ -106,7 +116,9 @@ def conv_block(in_channels, out_channels, kernel_size=3, stride=1, dilation=1, b
                 stride=stride,
                 dilation=dilation,
                 padding=((kernel_size - 1) // 2) * dilation,
-                bias=bias)),
+                bias=bias,
+            )
+        ),
         nn.LeakyReLU(0.2),
         spectral_norm(
             nn.Conv2d(
@@ -116,7 +128,9 @@ def conv_block(in_channels, out_channels, kernel_size=3, stride=1, dilation=1, b
                 stride=stride,
                 dilation=dilation,
                 padding=((kernel_size - 1) // 2) * dilation,
-                bias=bias)),
+                bias=bias,
+            )
+        ),
     )
 
 
@@ -128,7 +142,15 @@ class MSDilationBlock(nn.Module):
 
         self.conv_blocks = nn.ModuleList()
         for i in range(4):
-            self.conv_blocks.append(conv_block(in_channels, in_channels, kernel_size, dilation=dilation[i], bias=bias))
+            self.conv_blocks.append(
+                conv_block(
+                    in_channels,
+                    in_channels,
+                    kernel_size,
+                    dilation=dilation[i],
+                    bias=bias,
+                )
+            )
         self.conv_fusion = spectral_norm(
             nn.Conv2d(
                 in_channels * 4,
@@ -136,7 +158,9 @@ class MSDilationBlock(nn.Module):
                 kernel_size=kernel_size,
                 stride=1,
                 padding=(kernel_size - 1) // 2,
-                bias=bias))
+                bias=bias,
+            )
+        )
 
     def forward(self, x):
         out = []

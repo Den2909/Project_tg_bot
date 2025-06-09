@@ -82,7 +82,7 @@ def main():
         print(torch.sum(torch.abs(k1.grad - k2.grad)))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 r"""Output:
 conv0.weight torch.Size([4, 3, 3, 3])

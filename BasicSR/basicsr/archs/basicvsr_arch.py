@@ -91,7 +91,9 @@ class BasicVSR(nn.Module):
             out = self.lrelu(self.pixel_shuffle(self.upconv2(out)))
             out = self.lrelu(self.conv_hr(out))
             out = self.conv_last(out)
-            base = F.interpolate(x_i, scale_factor=4, mode='bilinear', align_corners=False)
+            base = F.interpolate(
+                x_i, scale_factor=4, mode="bilinear", align_corners=False
+            )
             out += base
             out_l[i] = out
 
@@ -110,8 +112,10 @@ class ConvResidualBlocks(nn.Module):
     def __init__(self, num_in_ch=3, num_out_ch=64, num_block=15):
         super().__init__()
         self.main = nn.Sequential(
-            nn.Conv2d(num_in_ch, num_out_ch, 3, 1, 1, bias=True), nn.LeakyReLU(negative_slope=0.1, inplace=True),
-            make_layer(ResidualBlockNoBN, num_block, num_feat=num_out_ch))
+            nn.Conv2d(num_in_ch, num_out_ch, 3, 1, 1, bias=True),
+            nn.LeakyReLU(negative_slope=0.1, inplace=True),
+            make_layer(ResidualBlockNoBN, num_block, num_feat=num_out_ch),
+        )
 
     def forward(self, fea):
         return self.main(fea)
@@ -130,13 +134,15 @@ class IconVSR(nn.Module):
         edvr_path (str): Path to the pretrained EDVR model. Default: None.
     """
 
-    def __init__(self,
-                 num_feat=64,
-                 num_block=15,
-                 keyframe_stride=5,
-                 temporal_padding=2,
-                 spynet_path=None,
-                 edvr_path=None):
+    def __init__(
+        self,
+        num_feat=64,
+        num_block=15,
+        keyframe_stride=5,
+        temporal_padding=2,
+        spynet_path=None,
+        edvr_path=None,
+    ):
         super().__init__()
 
         self.num_feat = num_feat
@@ -185,7 +191,7 @@ class IconVSR(nn.Module):
 
         # padding
         x = x.view(-1, c, h, w)
-        x = F.pad(x, [0, pad_w, 0, pad_h], mode='reflect')
+        x = F.pad(x, [0, pad_w, 0, pad_h], mode="reflect")
 
         return x.view(n, t, c, h + pad_h, w + pad_w)
 
@@ -210,7 +216,7 @@ class IconVSR(nn.Module):
         num_frames = 2 * self.temporal_padding + 1
         feats_keyframe = {}
         for i in keyframe_idx:
-            feats_keyframe[i] = self.edvr(x[:, i:i + num_frames].contiguous())
+            feats_keyframe[i] = self.edvr(x[:, i : i + num_frames].contiguous())
         return feats_keyframe
 
     def forward(self, x):
@@ -261,11 +267,13 @@ class IconVSR(nn.Module):
             out = self.lrelu(self.pixel_shuffle(self.upconv2(out)))
             out = self.lrelu(self.conv_hr(out))
             out = self.conv_last(out)
-            base = F.interpolate(x_i, scale_factor=4, mode='bilinear', align_corners=False)
+            base = F.interpolate(
+                x_i, scale_factor=4, mode="bilinear", align_corners=False
+            )
             out += base
             out_l[i] = out
 
-        return torch.stack(out_l, dim=1)[..., :4 * h_input, :4 * w_input]
+        return torch.stack(out_l, dim=1)[..., : 4 * h_input, : 4 * w_input]
 
 
 class EDVRFeatureExtractor(nn.Module):
@@ -293,13 +301,21 @@ class EDVRFeatureExtractor(nn.Module):
 
         # pcd and tsa module
         self.pcd_align = PCDAlignment(num_feat=num_feat, deformable_groups=8)
-        self.fusion = TSAFusion(num_feat=num_feat, num_frame=num_input_frame, center_frame_idx=self.center_frame_idx)
+        self.fusion = TSAFusion(
+            num_feat=num_feat,
+            num_frame=num_input_frame,
+            center_frame_idx=self.center_frame_idx,
+        )
 
         # activation function
         self.lrelu = nn.LeakyReLU(negative_slope=0.1, inplace=True)
 
         if load_path:
-            self.load_state_dict(torch.load(load_path, map_location=lambda storage, loc: storage)['params'])
+            self.load_state_dict(
+                torch.load(load_path, map_location=lambda storage, loc: storage)[
+                    "params"
+                ]
+            )
 
     def forward(self, x):
         b, n, c, h, w = x.size()
@@ -321,13 +337,16 @@ class EDVRFeatureExtractor(nn.Module):
 
         # PCD alignment
         ref_feat_l = [  # reference feature list
-            feat_l1[:, self.center_frame_idx, :, :, :].clone(), feat_l2[:, self.center_frame_idx, :, :, :].clone(),
-            feat_l3[:, self.center_frame_idx, :, :, :].clone()
+            feat_l1[:, self.center_frame_idx, :, :, :].clone(),
+            feat_l2[:, self.center_frame_idx, :, :, :].clone(),
+            feat_l3[:, self.center_frame_idx, :, :, :].clone(),
         ]
         aligned_feat = []
         for i in range(n):
             nbr_feat_l = [  # neighboring feature list
-                feat_l1[:, i, :, :, :].clone(), feat_l2[:, i, :, :, :].clone(), feat_l3[:, i, :, :, :].clone()
+                feat_l1[:, i, :, :, :].clone(),
+                feat_l2[:, i, :, :, :].clone(),
+                feat_l3[:, i, :, :, :].clone(),
             ]
             aligned_feat.append(self.pcd_align(nbr_feat_l, ref_feat_l))
         aligned_feat = torch.stack(aligned_feat, dim=1)  # (b, t, c, h, w)
