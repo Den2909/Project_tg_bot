@@ -5,14 +5,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pytest
 import importlib
 import torch
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 from collections import OrderedDict
-
-# Мокаем aiogram.Dispatcher на уровне модуля, чтобы перехватить его до импорта app_v3
-mock_dispatcher = MagicMock()
-mock_dispatcher.message_handler = MagicMock(return_value=lambda x: x)
-mock_dispatcher.callback_query_handler = MagicMock(return_value=lambda x: x)
-sys.modules["aiogram"].Dispatcher = mock_dispatcher
 
 # Сохраняем реальный os.getenv
 real_getenv = os.getenv
@@ -31,6 +25,12 @@ def mock_telegram_api():
 
 # Тест загрузки модели
 def test_load_model(mocker):
+    # Мокаем aiogram.Dispatcher до импорта app_v3
+    mock_dispatcher = MagicMock()
+    mock_dispatcher.message_handler = MagicMock(return_value=lambda x: x)
+    mock_dispatcher.callback_query_handler = MagicMock(return_value=lambda x: x)
+    mocker.patch("aiogram.Dispatcher", return_value=mock_dispatcher)
+    
     # Мокаем torch.load для load_model
     mocker.patch("torch.load", return_value={})
     # Мокаем VGG19_Weights.IMAGENET1K_V1.get_state_dict
