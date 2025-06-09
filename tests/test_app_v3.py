@@ -25,12 +25,6 @@ def mock_telegram_api():
 
 # Тест загрузки модели
 def test_load_model(mocker):
-    # Мокаем aiogram.Dispatcher
-    mock_dispatcher = MagicMock()
-    mock_dispatcher.message_handler = MagicMock(return_value=lambda x: x)
-    mock_dispatcher.callback_query_handler = MagicMock(return_value=lambda x: x)
-    mocker.patch("aiogram.Dispatcher", return_value=mock_dispatcher)
-    
     # Мокаем torch.load
     mocker.patch("torch.load", return_value={})
     # Мокаем VGG19_Weights.IMAGENET1K_V1.get_state_dict
