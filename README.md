@@ -39,19 +39,19 @@
 
 2. **Соберите Docker-образ**:
    ```bash
-   docker build -t tg-bot .
+   docker build -t tg-bot --build-arg TELEGRAM_BOT_TOKEN="token" .
    ```
 
 3. **Запустите контейнер**:
 
    - На машине с **GPU**:
      ```bash
-     docker run --gpus all -d --name style-bot -e TELEGRAM_BOT_TOKEN="token" tg-bot
+     docker run --gpus all -d --name style-bot tg-bot
      ```
 
    - На машине с **CPU**:
      ```bash
-     docker run -d --name style-bot -e TELEGRAM_BOT_TOKEN="token" tg-bot
+     docker run -d --name style-bot tg-bot
      ```
 
 4. **Взаимодействие с ботом**:
