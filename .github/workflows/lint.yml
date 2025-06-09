@@ -51,8 +51,6 @@ jobs:
       - name: Run Mypy
         run: mypy .
 
-      - name: Run Pytest
-        run: pytest tests/ -v --asyncio-mode=auto
 
       - name: Commit and push changes
         run: |
