@@ -31,16 +31,38 @@ def test_load_model(mocker):
     # Мокаем torch.load для load_model
     mocker.patch("torch.load", return_value={})
     # Мокаем VGG19_Weights.IMAGENET1K_V1.get_state_dict
+    # Определяем размерности для features и classifier
+    feature_shapes = {
+        0: ([64, 3, 3, 3], [64]),      # weight: [out, in, k, k], bias: [out]
+        2: ([64, 64, 3, 3], [64]),
+        5: ([128, 64, 3, 3], [128]),
+        7: ([128, 128, 3, 3], [128]),
+        10: ([256, 128, 3, 3], [256]),
+        12: ([256, 256, 3, 3], [256]),
+        14: ([256, 256, 3, 3], [256]),
+        16: ([256, 256, 3, 3], [256]),
+        19: ([512, 256, 3, 3], [512]),
+        21: ([512, 512, 3, 3], [512]),
+        23: ([512, 512, 3, 3], [512]),
+        25: ([512, 512, 3, 3], [512]),
+        28: ([512, 512, 3, 3], [512]),
+        30: ([512, 512, 3, 3], [512]),
+        32: ([512, 512, 3, 3], [512]),
+        34: ([512, 512, 3, 3], [512]),
+    }
+    classifier_shapes = {
+        0: ([4096, 25088], [4096]),    # weight: [out, in], bias: [out]
+        3: ([4096, 4096], [4096]),
+        6: ([1000, 4096], [1000]),
+    }
     mock_state_dict = OrderedDict([
-        # Features
-        (f"features.{i}.{param}", torch.tensor(0.0))
-        for i in [0, 2, 5, 7, 10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32, 34]
-        for param in ["weight", "bias"]
+        (f"features.{i}.{param}", torch.zeros(shape))
+        for i, (weight_shape, bias_shape) in feature_shapes.items()
+        for param, shape in [("weight", weight_shape), ("bias", bias_shape)]
     ] + [
-        # Classifier
-        (f"classifier.{i}.{param}", torch.tensor(0.0))
-        for i in [0, 3, 6]
-        for param in ["weight", "bias"]
+        (f"classifier.{i}.{param}", torch.zeros(shape))
+        for i, (weight_shape, bias_shape) in classifier_shapes.items()
+        for param, shape in [("weight", weight_shape), ("bias", bias_shape)]
     ])
     mocker.patch(
         "torchvision.models.vgg.VGG19_Weights.IMAGENET1K_V1.get_state_dict",
