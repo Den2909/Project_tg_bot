@@ -76,9 +76,9 @@
 | Стиль        | Пример входа | Результат |
 |--------------|--------------|-----------|
 | Ван Гог      | ![Пример](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/vang/vang.jpg) | ![Результат](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/vang/res_1.jpg) |
-| Моне         | ![Пример](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/mone/mone.jpg) | ![Результат](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/vang/res_2.jpg) |
-| Укиё-э       | ![Пример](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/Uki/uki.jpg) | ![Результат](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/vang/res_4.jpg) |
-| Сезанн       | ![Пример](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/cezan/h-364747.jpg) | ![Результат](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/vang/res_3.jpg) |
+| Моне         | ![Пример](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/mone/mone.jpg) | ![Результат](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/mone/res_2.jpg) |
+| Укиё-э       | ![Пример](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/Uki/uki.jpg) | ![Результат](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/Uki/res_4.jpg) |
+| Сезанн       | ![Пример](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/cezan/h-364747.jpg) | ![Результат](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/cezan/res_3.jpg) |
 
 ### 🖼️ Нейронный перенос стиля (NST)
 
