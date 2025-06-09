@@ -19,13 +19,21 @@ from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
 import sys
 
-# Инициализация бота
-API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "fake_token" if "pytest" in sys.modules else None) # noqa: F821
-if not API_TOKEN:
-    raise ValueError("Не задан TELEGRAM_BOT_TOKEN в переменных окружения!")
-bot = Bot(token=API_TOKEN)
-storage = MemoryStorage()
-dp = Dispatcher(bot, storage=storage)
+
+# Инициализация бота только если не в тестовом окружении
+if "pytest" not in sys.modules:
+    API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+    if not API_TOKEN:
+        raise ValueError("Не задан TELEGRAM_BOT_TOKEN в переменных окружения!")
+    bot = Bot(token=API_TOKEN)
+    storage = MemoryStorage()
+    dp = Dispatcher(bot, storage=storage)
+else:
+    # Заглушки для тестов
+    API_TOKEN = None
+    bot = None
+    storage = None
+    dp = None
 
 # Словарь с доступными стилями и путями к моделям
 STYLE_MODELS = {
