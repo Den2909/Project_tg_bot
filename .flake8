@@ -1,21 +1,10 @@
 [flake8]
 max-line-length = 88
+extend-ignore = E203, W503, E501, F401, E721, E402, F821
 exclude =
     .git,
     __pycache__,
     venv,
     .venv,
-    BasicSR/,
-    tests/,
-
-# Black: пробелы перед двоеточиями
-# Black: перенос операторов
-# Временно игнорировать длинные строки
-# Игнорировать неиспользуемые импорты
-ignore =
-    E203,
-    W503,
-    E501,
-    F401,
-    E721,
-    F821
+    BasicSR,
+    tests,
