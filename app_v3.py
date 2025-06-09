@@ -19,7 +19,7 @@ from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
 
 # Инициализация бота
-API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # Получаем токен из переменной окружения
+API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "fake_token" if "pytest" in sys.modules else None)
 if not API_TOKEN:
     raise ValueError("Не задан TELEGRAM_BOT_TOKEN в переменных окружения!")
 bot = Bot(token=API_TOKEN)
