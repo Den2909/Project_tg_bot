@@ -19,7 +19,7 @@ from app_v3 import (
 )
 
 
-# Фикстура для создания временного изображения
+# Создание временного изображения
 @pytest.fixture
 def temp_image():
     with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as temp:
