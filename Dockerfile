@@ -15,11 +15,9 @@ WORKDIR /app
 
 # Копируем зависимости отдельно для кэширования
 COPY requirements.txt .
-COPY requirements-dev.txt .  # Если используете отдельный файл для тестов
 
 # Установка Python-зависимостей с автоматическим определением CUDA
 RUN pip install --upgrade pip && \
-    # Проверяем наличие GPU и устанавливаем соответствующие версии
     if command -v nvidia-smi &> /dev/null; then \
         echo "Установка версий с поддержкой CUDA"; \
         pip install --no-cache-dir -r requirements.txt; \
@@ -29,9 +27,7 @@ RUN pip install --upgrade pip && \
         echo "Установка CPU-версий"; \
         sed -i 's/+cu[0-9]*//g' requirements.txt; \
         pip install --no-cache-dir -r requirements.txt; \
-    fi && \
-    # Устанавливаем тестовые зависимости
-    pip install --no-cache-dir -r requirements-dev.txt
+    fi
 
 # Копируем остальные файлы
 COPY . .
@@ -44,21 +40,21 @@ RUN pip install --no-cache-dir -e /app/BasicSR
 
 # Запуск линтеров и тестов во время сборки
 RUN python -m black --check . && \
-    python -m flake8 . && \
+    python -m flake8 . --config=.flake8 && \
     python -m pylint *.py && \
     python -m mypy . && \
     python -m pytest tests/ -v --asyncio-mode=auto
 
 # Создаём entrypoint.sh
 RUN echo "#!/bin/sh\n" > /entrypoint.sh && \
-    echo "if command -nvidia-smi v3> /dev/null; then" >> /entrypoint.sh \
-            echo "  echo 'Container was running with GPU acceleration'" >> /entrypoint.sh \
-    echo "else" >> /entrypoint.sh && \
-    echo "  echo 'Container was running on CPU only'" >> /entrypoint.sh \
-    echo "fi" >> /entrypoint.sh && \
-    echo "python3 /app/app_v3.py" >> /entrypoint.sh && \
+    echo "if command -v nvidia-smi &> /dev/null; then\n" >> /entrypoint.sh && \
+    echo "  echo 'Container running with GPU acceleration'\n" >> /entrypoint.sh && \
+    echo "else\n" >> /entrypoint.sh && \
+    echo "  echo 'Container running on CPU only'\n" >> /entrypoint.sh && \
+    echo "fi\n" >> /entrypoint.sh && \
+    echo "python3 /app/app_v3.py\n" >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["python3.11", "app_v3.py"]
+CMD ["python3", "app_v3.py"]
