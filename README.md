@@ -84,13 +84,13 @@
 
 | Контент      | Стиль        | Результат  |
 |--------------|--------------|------------|
-| [контент](#) | [стиль](#)   | [результат](#) |
+![Контент](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/NST/IMG_8186.jpg) | ![Стиль](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/NST/style_cont.jpg) | ![Результат](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/style/vang/photo_2025-06-09_21-24-02.jpg) |
 
 ### 🔧 Улучшение качества (Real-ESRGAN)
 
 | Входное изображение | Результат |
 |---------------------|-----------|
-| [пример](#)         | [результат](#) |
+| ![Пример](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/ESRG/photo_2025-06-09_21-28-08.jpg) | ![Результат](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/ESRG/photo_2025-06-09_21-28-13.jpg) |
 
 
 ##  Форматирование, линтинг и тестирование
