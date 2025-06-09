@@ -2,6 +2,12 @@
 ARG BASE_IMAGE=python:3.11-slim
 FROM ${BASE_IMAGE}
 
+# Аргумент для токена
+ARG TELEGRAM_BOT_TOKEN
+
+# Установка переменной окружения для токена
+ENV TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+
 # Установка системных зависимостей
 RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
