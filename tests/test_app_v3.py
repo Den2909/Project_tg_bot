@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pytest
 import importlib
 from unittest.mock import patch, MagicMock
+from collections import OrderedDict
 
 # Сохраняем реальный os.getenv
 real_getenv = os.getenv
@@ -28,13 +29,17 @@ def mock_telegram_api():
 def test_load_model(mocker):
     # Мокаем torch.load для load_model
     mocker.patch("torch.load", return_value={})
-    # Мокаем torchvision.models.vgg.vgg19
-    mock_vgg = MagicMock()
-    # Настраиваем цепочку .features.to().eval()
-    mock_vgg.features.to.return_value.eval.return_value = mock_vgg
-    # Мокаем load_state_dict, чтобы он ничего не делал
-    mock_vgg.load_state_dict = MagicMock()
-    mocker.patch("torchvision.models.vgg.vgg19", return_value=mock_vgg)
+    # Мокаем VGG19_Weights.IMAGENET1K_V1.get_state_dict
+    mock_state_dict = OrderedDict([
+        ("features.0.weight", MagicMock()),
+        ("features.0.bias", MagicMock()),
+        ("classifier.6.weight", MagicMock()),
+        ("classifier.6.bias", MagicMock())
+    ])
+    mocker.patch(
+        "torchvision.models.vgg.VGG19_Weights.IMAGENET1K_V1.get_state_dict",
+        return_value=mock_state_dict
+    )
     # Динамически импортируем app_v3
     app_v3 = importlib.import_module("app_v3")
     model = app_v3.load_model("vangogh")
