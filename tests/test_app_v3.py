@@ -8,6 +8,20 @@ import numpy as np
 from PIL import Image
 import cv2
 import tempfile
+from unittest.mock import patch, MagicMock
+
+# Моки для предотвращения инициализации Telegram API
+@pytest.fixture(autouse=True)
+def mock_telegram_api():
+    with patch("os.getenv", return_value="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11") as mock_getenv, \
+         patch("aiogram.Bot", return_value=MagicMock()) as mock_bot, \
+         patch("aiogram.Dispatcher", return_value=MagicMock()) as mock_dispatcher:
+        # Настраиваем мок для Dispatcher, чтобы он возвращал MagicMock для message_handler и callback_query_handler
+        mock_dispatcher.return_value.message_handler = MagicMock(return_value=lambda x: x)
+        mock_dispatcher.return_value.callback_query_handler = MagicMock(return_value=lambda x: x)
+        yield
+
+# Импорт app_v3 после установки моков
 from app_v3 import process_image, enhance_image, style_transfer_nst_sync, STYLE_MODELS, load_model, load_enhance_model
 
 # Фикстура для создания временного изображения
