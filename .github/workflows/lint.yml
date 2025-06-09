@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install black==24.8.0 flake8==7.1.1 pylint==3.3.1 mypy==1.11.2 pytest==8.3.3 pytest-asyncio==0.24.0 pytest-mock==3.14.0 aiogram==2.25.2 torch==2.0.0 torchvision==0.15.1 numpy==1.26.4 Pillow opencv-python
+          pip install black==24.8.0 flake8==7.1.1 pylint==3.3.1 mypy==1.11.2 pytest==8.3.3 pytest-asyncio==0.24.0 pytest-mock==3.14.0 aiogram==2.25.2 torch==2.0.0 torchvision==0.15.1 numpy==1.26.4 Pillow opencv-python realesrgan basicsr
 
       - name: Create pyproject.toml
         run: |
@@ -65,3 +65,5 @@ jobs:
             git commit -m "Apply Black formatting and lint fixes [skip ci]"
             git push origin HEAD
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
