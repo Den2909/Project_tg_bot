@@ -75,8 +75,8 @@
 
 | Стиль        | Пример входа | Результат |
 |--------------|--------------|-----------|
-| Ван Гог      | [пример](https://github.com/Den2909/Project_tg_bot/blob/main/images/vang.jpg?raw=true)  | [результат](#) |
-| Моне         | [пример](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/mone/mone.jpeg)  | [результат](#) |
+| Ван Гог      | ![пример](https://github.com/Den2909/Project_tg_bot/blob/main/images/vang.jpg?raw=true)  | [результат](#) |
+| Моне         | ![пример](https://raw.githubusercontent.com/Den2909/Project_tg_bot/main/images/mone/mone.jpeg)  | [результат](#) |
 | Укиё-э       | [пример](#)  | [результат](#) |
 | Сезанн       | [пример](#)  | [результат](#) |
 
