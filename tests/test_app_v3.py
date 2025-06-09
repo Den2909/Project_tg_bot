@@ -23,8 +23,12 @@ def mock_telegram_api():
 
 # Тест загрузки модели
 def test_load_model(mocker):
-    # Мокаем torch.load
+    # Мокаем torch.load для load_model
     mocker.patch("torch.load", return_value={})
+    # Мокаем torchvision.models.vgg.vgg19
+    mock_vgg = MagicMock()
+    mock_vgg.features.to.return_value.eval.return_value = mock_vgg
+    mocker.patch("torchvision.models.vgg.vgg19", return_value=mock_vgg)
     # Динамически импортируем app_v3
     app_v3 = importlib.import_module("app_v3")
     model = app_v3.load_model("vangogh")
