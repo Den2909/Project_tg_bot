@@ -1,70 +1,53 @@
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import pytest
-import importlib
 import torch
-from unittest.mock import patch, MagicMock
-from collections import OrderedDict
+import numpy as np
+from PIL import Image
+import cv2
+import os
+import tempfile
+from bot import process_image, enhance_image, style_transfer_nst_sync, STYLE_MODELS, load_model, load_enhance_model
 
-# Сохраняем реальный os.getenv
-real_getenv = os.getenv
+# Фикстура для создания временного изображения
+@pytest.fixture
+def temp_image():
+    with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as temp:
+        img = Image.new("RGB", (256, 256), color="red")
+        img.save(temp.name)
+        yield temp.name
+    os.unlink(temp.name)
 
-# Моки для Telegram API
-@pytest.fixture(autouse=True)
-def mock_telegram_api():
-    def selective_getenv(key, default=None):
-        if key == "TELEGRAM_BOT_TOKEN":
-            return "123456:ABC-DEF1234ghIkl-123ew11"
-        return real_getenv(key, default)
-    
-    with patch("os.getenv", side_effect=selective_getenv), \
-         patch("aiogram.Bot", return_value=MagicMock()):
-        yield
+# Пропускаем тесты, если нет GPU, чтобы не зависеть от окружения
+pytestmark = pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA not available")
 
-# Тест загрузки модели
-def test_load_model(mocker):
-    # Мокаем torch.load
-    mocker.patch("torch.load", return_value={})
-    # Мокаем VGG19_Weights.IMAGENET1K_V1.get_state_dict
-    feature_shapes = {
-        0: ([64, 3, 3, 3], [64]),      # weight: [out, in, k, k], bias: [out]
-        2: ([64, 64, 3, 3], [64]),
-        5: ([128, 64, 3, 3], [128]),
-        7: ([128, 128, 3, 3], [128]),
-        10: ([256, 128, 3, 3], [256]),
-        12: ([256, 256, 3, 3], [256]),
-        14: ([256, 256, 3, 3], [256]),
-        16: ([256, 256, 3, 3], [256]),
-        19: ([512, 256, 3, 3], [512]),
-        21: ([512, 512, 3, 3], [512]),
-        23: ([512, 512, 3, 3], [512]),
-        25: ([512, 512, 3, 3], [512]),
-        28: ([512, 512, 3, 3], [512]),
-        30: ([512, 512, 3, 3], [512]),
-        32: ([512, 512, 3, 3], [512]),
-        34: ([512, 512, 3, 3], [512]),
-    }
-    classifier_shapes = {
-        0: ([4096, 25088], [4096]),
-        3: ([4096, 4096], [4096]),
-        6: ([1000, 4096], [1000]),
-    }
-    mock_state_dict = OrderedDict([
-        (f"features.{i}.{param}", torch.zeros(shape))
-        for i, (weight_shape, bias_shape) in feature_shapes.items()
-        for param, shape in [("weight", weight_shape), ("bias", bias_shape)]
-    ] + [
-        (f"classifier.{i}.{param}", torch.zeros(shape))
-        for i, (weight_shape, bias_shape) in classifier_shapes.items()
-        for param, shape in [("weight", weight_shape), ("bias", bias_shape)]
-    ])
-    mocker.patch(
-        "torchvision.models.vgg.VGG19_Weights.IMAGENET1K_V1.get_state_dict",
-        return_value=mock_state_dict
-    )
-    # Импортируем app_v3
-    app_v3 = importlib.import_module("app_v3")
-    model = app_v3.load_model("vangogh")
-    assert model is not None, "Model failed to load"
+# Тест для проверки загрузки модели
+def test_load_model():
+    for style_key in STYLE_MODELS:
+        model = load_model(style_key)
+        assert model is not None, f"Model for {style_key} failed to load"
+        assert isinstance(model, torch.nn.Module), f"Model for {style_key} is not a torch module"
+
+# Тест для process_image
+def test_process_image(temp_image):
+    style_key = "vangogh"  # Проверяем с одним стилем
+    output_path = process_image(temp_image, style_key)
+    assert os.path.exists(output_path), "Output image was not created"
+    img = Image.open(output_path)
+    assert img.size == (256, 256), "Output image size is incorrect"
+    os.unlink(output_path)
+
+# Тест для enhance_image
+def test_enhance_image(temp_image):
+    output_path = enhance_image(temp_image)
+    assert os.path.exists(output_path), "Enhanced image was not created"
+    img = Image.open(output_path)
+    assert img.size[0] >= 256 * 2, "Enhanced image size is too small"
+    os.unlink(output_path)
+
+# Тест для style_transfer_nst_sync
+def test_style_transfer_nst_sync(temp_image):
+    output_path = tempfile.mktemp(suffix=".jpg")
+    style_transfer_nst_sync(temp_image, temp_image, output_path, num_steps=10)  # Уменьшаем шаги для скорости
+    assert os.path.exists(output_path), "NST output image was not created"
+    img = Image.open(output_path)
+    assert img.size == (512, 512), "NST output image size is incorrect"
+    os.unlink(output_path)
