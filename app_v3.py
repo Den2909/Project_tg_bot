@@ -18,6 +18,7 @@ from models.networks import define_G, init_weights
 from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
 import sys
+from unittest.mock import MagicMock
 
 
 # Инициализация бота
