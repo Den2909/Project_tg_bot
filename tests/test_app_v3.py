@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 import cv2
 import tempfile
-from unittest.mock import patch
+from app_v3 import process_image, enhance_image, style_transfer_nst_sync, STYLE_MODELS, load_model, load_enhance_model
 
 # Фикстура для создания временного изображения
 @pytest.fixture
@@ -18,16 +18,6 @@ def temp_image():
         img.save(temp.name)
         yield temp.name
     os.unlink(temp.name)
-
-# Мок для os.getenv, чтобы обойти проверку TELEGRAM_BOT_TOKEN
-@pytest.fixture(autouse=True)
-def mock_telegram_token():
-    with patch("os.getenv") as mock_getenv:
-        mock_getenv.return_value = "fake_token"
-        yield
-
-# Импорт после мока
-from app_v3 import process_image, enhance_image, style_transfer_nst_sync, STYLE_MODELS, load_model, load_enhance_model
 
 # Пропускаем тесты, если нет GPU, чтобы не зависеть от окружения
 pytestmark = pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA not available")
