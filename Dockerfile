@@ -21,8 +21,6 @@ RUN pip install --upgrade pip && \
     if command -v nvidia-smi &> /dev/null; then \
         echo "Установка версий с поддержкой CUDA"; \
         pip install --no-cache-dir -r requirements.txt; \
-        pip install --no-cache-dir torch==2.0.0+cu113 torchvision==0.15.1+cu113 \
-            --extra-index-url https://download.pytorch.org/whl/cu113; \
     else \
         echo "Установка CPU-версий"; \
         sed -i 's/+cu[0-9]*//g' requirements.txt; \
