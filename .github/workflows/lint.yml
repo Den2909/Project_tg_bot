@@ -9,7 +9,7 @@ jobs:
   lint-format-test:
     runs-on: ubuntu-latest
     env:
-      TELEGRAM_BOT_TOKEN: "fake_token"  # Фиктивный токен для тестов
+      PYTHONPATH: .  # Добавляем корень проекта в PYTHONPATH
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,7 +30,6 @@ jobs:
       - name: Create pyproject.toml
         run: |
           echo "[tool.pytest.ini_options]" > pyproject.toml
-          echo "python_paths = \".\"" >> pyproject.toml
           echo "asyncio_default_fixture_loop_scope = \"function\"" >> pyproject.toml
           echo "filterwarnings = [" >> pyproject.toml
           echo "  \"ignore::UserWarning:torchvision.transforms.functional_tensor\"," >> pyproject.toml
