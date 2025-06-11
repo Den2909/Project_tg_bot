@@ -97,7 +97,7 @@ def test_style_transfer_nst_sync(temp_image, mocker):
         },
     )
     mocker.patch("app_v3.gram_matrix", return_value=torch.randn(64, 64))
-    # Мокаем torch.randn_like для создания листового тензора
+    # Мокаем torch.randn_like
     mocker.patch("torch.randn_like", return_value=torch.randn(1, 3, 512, 512))
     # Мокаем создание оптимизатора Adam, чтобы избежать ошибки с non-leaf tensor
     mock_optimizer = mocker.Mock()
